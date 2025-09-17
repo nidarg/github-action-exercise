@@ -1,22 +1,22 @@
-name: Deploy
-on: push
-jobs:
-  deploy:
-    runs-on: ubuntu-latest
-    steps:
-      - name: get the code
-        uses: actions/checkout@v3
-      - name: install node js
-        uses: actions/setup-node@v3
-        with:
-          node-version: 18
-      - name: install dependecies
-        run: npm ci
-      - name: Lint
-        run: npm run lint
-      - name : test
-        run: npm test
-      - name: build project
-        run: npm run build
-      - name: simulate deploy
-        run: echo "Deploying ..."
+# name: Deploy
+# on: push
+# jobs:
+#   deploy:
+#     runs-on: ubuntu-latest
+#     steps:
+#       - name: get the code
+#         uses: actions/checkout@v3
+#       - name: install node js
+#         uses: actions/setup-node@v3
+#         with:
+#           node-version: 18
+#       - name: install dependecies
+#         run: npm ci
+#       - name: Lint
+#         run: npm run lint
+#       - name : test
+#         run: npm test
+#       - name: build project
+#         run: npm run build
+#       - name: simulate deploy
+#         run: echo "Deploying ..."
