@@ -1,4 +1,4 @@
-name: Test projecton
+name: test and deploy
 on: [push, workflow_dispatch]
 jobs:
   test:
