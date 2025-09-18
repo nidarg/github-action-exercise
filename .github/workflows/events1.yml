@@ -1,0 +1,27 @@
+name: Events Demo 1
+on:
+  pull_request:
+    types:
+      - opened
+      - closed
+  workflow_dispatch:
+jobs:
+  deploy:
+    runs-on: ubuntu-latest
+    steps:
+      - name: Output event data
+        run: echo "${{ toJSON(github.event)}}"
+      - name: Get code
+        uses: actions/checkout@v3
+      - name: Install NodeJS
+        uses: actions/setup-node@v3
+        with:
+          node-version: 18
+      - name: Install dependecies
+        run: npm ci
+      - name: Run tests
+        run: npm test
+      - name: Build project
+        run: npm run build
+      - name: Fake deploy
+        run: echo "Deploying..."
