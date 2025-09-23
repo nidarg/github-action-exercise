@@ -1,60 +1,74 @@
+# Numele workflow-ului așa cum apare în tab-ul "Actions"
 name: test and deploy
+
+# Declanșatorul workflow-ului: la fiecare push pe branch-ul main
 on:
   push:
     branches:
       - main
+
+# Secțiunea "jobs" definește toate job-urile care rulează în workflow
 jobs:
+  # Primul job: test
   test:
-    runs-on: ubuntu-latest
-    steps:
+    runs-on: ubuntu-latest # Rulează pe mașină virtuală Ubuntu
+    steps: # Lista de pași
       - name: Get code
-        uses: actions/checkout@v3
+        uses: actions/checkout@v4 # Clonăm codul repo în runner
       - name: Install NodeJS
-        uses: actions/setup-node@v3
+        uses: actions/setup-node@v4
         with:
-          node-version: 18
-      - name: Install dependecies
-        run: npm ci
+          node-version: 18 # Instalează Node.js v18 pe runner
+      - name: Install dependencies
+        run: npm ci # Instalează dependențele din package-lock.json
       - name: Lint code
-        run: npm run lint
+        run: npm run lint # Rulează linter-ul pentru a verifica stilul codului
       - name: Run tests
-        run: npm test
+        run: npm test # Rulează testele automate
+
+  # Al doilea job: build
   build:
-    needs: test
+    needs: test # Acest job pornește doar după ce "test" se termină cu succes
     runs-on: ubuntu-latest
-    outputs:
-      script-file: ${{ steps.publish.outputs.script-file}}
+    outputs: # Definim output-uri la nivel de job (vizibile în alte job-uri)
+      script-file: ${{ steps.publish.outputs.script-file }}
+      # Output-ul jobului "build" va fi valoarea exportată de step-ul "publish"
     steps:
       - name: Get code
-        uses: actions/checkout@v3
-      - name: Install dependecies
-        run: npm ci
+        uses: actions/checkout@v4 # Clonăm codul
+      - name: Install dependencies
+        run: npm ci # Instalăm dependențele din nou (fiecare job pornește de la zero)
       - name: Build website
-        run: npm run build
+        run: npm run build # Construim aplicația (ex: creează dist/)
       - name: Publish JS files
-        id: publish
-        run: find dist/assets/*.js -type f -execdir echo 'script-file={}' >> $GITHUB_OUTPUT ';'
+        id: publish # Id-ul pasului, pentru a putea referi outputs
+        run: |
+          # Găsește primul fișier .js din folderul dist/assets
+          FILE=$(find dist/assets -name "*.js" | head -n 1)
+          # Salvează calea fișierului în variabila specială $GITHUB_OUTPUT,
+          # ceea ce înseamnă că pasul "publish" va expune un output numit script-file
+          # Exemplu rezultat: script-file=dist/assets/index.abcd1234.js
+          echo "script-file=$FILE" >> $GITHUB_OUTPUT
       - name: Upload artifacts
         uses: actions/upload-artifact@v4
         with:
-          name: dist-files #where to save the files after build
-          path: dist
-          #path: | #the paths where are the files you want to upload
-          #dist
-          #package.json
+          name: dist-files # Numele artifactului salvat pe GitHub
+          path: dist # Folderul dist/ (toate fișierele generate)
+
+  # Al treilea job: deploy
   deploy:
-    needs: build
+    needs: build # Rulează doar după ce jobul build se termină
     runs-on: ubuntu-latest
     steps:
-      # lets say you want to use the artifacts(dist folder after build) to deploy on a web server
-      # you have to download the artifacts here
       - name: Get build artifacts
         uses: actions/download-artifact@v4
         with:
-          name: dist-files #you have to specify the folder where you have uploaded the artifacts in build job
-      - name: Output contents # just to see the contents of downloaded files
-        run: ls
+          name: dist-files # Descărcăm artifactul "dist-files"
+          path: ./dist # Îl salvăm local în folderul ./dist
+      - name: Output contents
+        run: ls ./dist # Listăm fișierele pentru verificare
       - name: Output filename
         run: echo "${{ needs.build.outputs.script-file }}"
+        # Afișăm în consolă valoarea output-ului "script-file" calculat în jobul build
       - name: Fake deploy
-        run: echo "Deploying..."
+        run: echo "Deploying..." # Simulăm un deploy
