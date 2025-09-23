@@ -33,12 +33,21 @@ jobs:
         uses: actions/upload-artifact@v4
         with:
           name: dist-files #where to save the files after build
-          path: | #the paths where are the files you want to upload
-            dist
-            package.json
+          path: dist
+          #path: | #the paths where are the files you want to upload
+          #dist
+          #package.json
   deploy:
     needs: build
     runs-on: ubuntu-latest
     steps:
+      # lets say you want to use the ertifacts(dist folder after build) to deploy on a web server
+      # you have to download the artifacts here
+      -name Get build artifacts
+        uses: actions/download-artifact@v4
+        with:
+          name: dist-files #you have to specify the folder where you have uploaded the artifacts in build job
+      -name: Output contents
+        run: ls
       - name: Fake deploy
         run: echo "Deploying..."
