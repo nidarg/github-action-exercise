@@ -43,11 +43,11 @@ jobs:
     steps:
       # lets say you want to use the artifacts(dist folder after build) to deploy on a web server
       # you have to download the artifacts here
-      -name: Get build artifacts
+      - name: Get build artifacts
         uses: actions/download-artifact@v4
         with:
           name: dist-files #you have to specify the folder where you have uploaded the artifacts in build job
-      -name: Output contents
+      - name: Output contents
         run: ls
       - name: Fake deploy
         run: echo "Deploying..."
