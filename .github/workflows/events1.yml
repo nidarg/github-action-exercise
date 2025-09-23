@@ -1,34 +1,36 @@
-name: Events Demo 1
-on:
-  pull_request:
-    types:
-      - opened
-      - closed
-    branches:
-      - main
-  workflow_dispatch:
-  push:
-    branches:
-      - main
-    paths-ignore:
-      - '.github/workflows/*'
-jobs:
-  deploy:
-    runs-on: ubuntu-latest
-    steps:
-      - name: Output event data
-        run: echo "${{ toJSON(github.event)}}"
-      - name: Get code
-        uses: actions/checkout@v3
-      - name: Install NodeJS
-        uses: actions/setup-node@v3
-        with:
-          node-version: 18
-      - name: Install dependecies
-        run: npm ci
-      - name: Run tests
-        run: npm test
-      - name: Build project
-        run: npm run build
-      - name: Fake deploy
-        run: echo "Deploying..."
+# name: Events Demo 1
+# on:
+#   pull_request: # !!! if the repository was forked and a pull request from forked repo is made this will not trigger the event as a security measure untill you approve pr
+#     types:
+#       - opened
+#       - closed
+#     branches:
+#       - main
+#   workflow_dispatch:
+#   push:
+#     branches:
+#       - main
+#     paths-ignore:
+#       - '.github/workflows/*'
+# jobs:
+#   deploy:
+#     runs-on: ubuntu-latest
+#     steps:
+#       - name: Output event data
+#         run: echo "${{ toJSON(github.event)}}"
+#       - name: Get code
+#         uses: actions/checkout@v3
+#       - name: Install NodeJS
+#         uses: actions/setup-node@v3
+#         with:
+#           node-version: 18
+#       - name: Install dependecies
+#         run: npm ci
+#       - name: Run tests
+#         run: npm test
+#       - name: Build project
+#         run: npm run build
+#       - name: Fake deploy
+#         run: echo "Deploying..."
+# # very important -> if you want a commit to NOT triger a workflow you have to add to the commit message skip ci like this
+# # commit -m "added feature [skip ci]"
