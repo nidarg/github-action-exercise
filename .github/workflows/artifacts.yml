@@ -55,6 +55,6 @@ jobs:
       - name: Output contents # just to see the contents of downloaded files
         run: ls
       - name: Output filename
-        runn: echo "${{ needs.build.outputs.script-file }}"
+        run: echo "${{ needs.build.outputs.script-file }}"
       - name: Fake deploy
         run: echo "Deploying..."
